@@ -1,0 +1,289 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #F9F9F9;
+}
+
+*{
+    box-sizing: border-box;
+    font-family: 'Quicksand', sans-serif;
+}
+
+nav{
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+section.main{
+    padding: 0 24px;
+}
+
+h2{
+    font-size: 20px;
+}
+
+.event-list{
+    display: flex;
+    flex-direction: column;
+}
+
+.event-list .event{
+    display: flex;
+    /* box-shadow: rgb(0 0 0 / 20%) 0px 3px 1px -2px, rgb(0 0 0 / 14%) 0px 2px 2px 0px, rgb(0 0 0 / 12%) 0px 1px 5px 0px; */
+    margin-bottom: 16px;
+}
+
+.event-list .event .banner{
+    display: flex;
+    min-height: 120px;
+    background-size: cover;
+    background-position: center;
+    flex: 0 0 120px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.event-list .event .details{
+    display: flex;
+    flex-direction: column;
+    padding: 12px 16px;
+    justify-content: center;
+}
+
+.event-list .event .details h3{
+    margin: 0;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.event-list .event .details span:nth-child(2){
+    color: #707586;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex;
+}
+
+.event-list .event .details span:nth-child(2):before{
+    content: "";
+    background-image: url(/img/icons/distance.png);
+    background-size: 100%;
+    height: 18px;
+    width: 18px;
+    display: flex;
+    margin-right: 8px;
+}
+
+.event-list .event .details span:nth-child(3){
+    font-size: 14px;
+    display: flex;
+}
+
+.event-list .event .details span:nth-child(3):before{
+    content: "";
+    background-image: url(/img/icons/calendar.png);
+    background-size: 100%;
+    height: 18px;
+    width: 18px;
+    display: flex;
+    margin-right: 8px;
+}
+
+.event-details .banner img{
+    width: 100%;
+}
+
+.event-details .back{
+    border: none;
+    border-radius: 0;
+    background: url(/img/icons/back.png);
+    height: 40px;
+    width: 40px;
+    background-size: 75%;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+}
+
+.event-details section.main{
+    padding-bottom: 100px;
+}
+
+.event-details section.main .location{
+    display: flex;
+    margin-bottom: 16px;
+}
+
+.event-details section.main .location:before{
+    content: "";
+    background-image: url(/img/icons/pin.png);
+    background-size: 100%;
+    height: 18px;
+    width: 18px;
+    display: flex;
+    margin-right: 8px;
+}
+
+.event-details section.main .datetime{
+    display: flex;
+}
+
+.event-details section.main .datetime span{
+    white-space: nowrap;
+    display: flex;
+}
+
+.event-details section.main .datetime span.date{
+
+}
+
+.event-details section.main .datetime span.date:before{
+    content: "";
+    background-image: url(/img/icons/calendar.png);
+    background-size: 100%;
+    height: 18px;
+    width: 18px;
+    display: flex;
+    margin-right: 8px;
+}
+
+.event-details section.main .datetime span.time:before{
+    content: "";
+    background-image: url(/img/icons/clock.png);
+    background-size: 100%;
+    height: 18px;
+    width: 18px;
+    display: flex;
+    margin-right: 8px;
+}
+
+.buy{
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    padding: 24px;
+    background-color: white;
+}
+
+.buy button{
+    background-color: #1C1D20;
+    color: white;
+    border: 0;
+    width: 100%;
+    border-radius: 8px;
+    font-size: 22px;
+    padding: 12px;
+}
+
+.ticket{
+    padding: 32px;
+    padding-top: 64px;
+}
+
+.ticket .back{
+    border: none;
+    border-radius: 0;
+    background: url(/img/icons/back.png);
+    height: 40px;
+    width: 40px;
+    background-size: 75%;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+}
+
+.ticket section.main{
+    padding: 0;
+    background-color: white;
+    -webkit-box-shadow: 0px 0px 46px -20px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 0px 46px -20px rgba(0,0,0,0.75);
+    box-shadow: 0px 0px 46px -20px rgba(0,0,0,0.75);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.ticket .banner{
+
+} 
+
+.ticket .banner img{
+    width: 100%;
+}
+
+.ticket .details{
+    padding: 0 24px;
+}
+
+.ticket .details .location{
+    display: flex;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.ticket .details .location:before{
+    content: "";
+    background-image: url(/img/icons/pin.png);
+    background-size: 100%;
+    height: 18px;
+    width: 18px;
+    display: flex;
+    margin-right: 8px;
+}
+
+.ticket .details .datetime{
+    display: flex;
+    font-size: 14px;
+}
+
+.ticket .details .datetime span{
+    white-space: nowrap;
+    display: flex;
+}
+
+.ticket section.main .datetime span.date{
+
+}
+
+.ticket .details .datetime span.date:before{
+    content: "";
+    background-image: url(/img/icons/calendar.png);
+    background-size: 100%;
+    height: 18px;
+    width: 18px;
+    display: flex;
+    margin-right: 8px;
+}
+
+.ticket .details .datetime span.time:before{
+    content: "";
+    background-image: url(/img/icons/clock.png);
+    background-size: 100%;
+    height: 18px;
+    width: 18px;
+    display: flex;
+    margin-right: 8px;
+}
+
+.ticket .details .datetime{
+    margin-bottom: 24px;
+}
+
+.ticket .barcode{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    border-top: 2px dashed #707070;
+}
+
+.ticket .barcode span{
+    font-family: 'Libre Barcode 128 Text', cursive;
+    font-size: 64px;
+}
