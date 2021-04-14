@@ -1,84 +1,139 @@
-const events = [
+import { randomNumber, random } from "./utils";
+
+const EVENTS_SEED = [
     {
-        id: "one",
-      name: "Electric Daisy Carnival",
-      location: {
-        address: "EDC Las Vegas, NV",
-        lat: 36.114647,
-        lon: -115.172813,
-      },
-      date: "May 31, 2021",
-      time: "10:00 AM to 03:00 PM",
-      bannerId: 1
+        name: "Electric Daisy Carnival",
+        country: "US",
+        time: "01:00 PM to 08:00 PM"
     },
     {
-        id: "two",
-      name: "Opry at the Ryman",
-      location: {
-        address: "Nashville, TN",
-        lat: 36.174465,
-        lon: -86.767960,
-      },
-      date: "Apr 17, 2021",
-      time: "05:00 PM to 10:00 PM",
-      bannerId: 2
+        name: "Rolling Loud Music Festival",
+        country: "US",
+        time: "05:00 PM to 10:00 PM"
     },
     {
-      id: "three",
-    name: "Rolling Loud Music Festival",
-    location: {
-      address: "Miami Gardens, FL",
-      lat: 25.942122,
-      lon: -80.269920,
+        name: "Opry at the Ryman",
+        country: "US",
+        time: "09:00 AM to 01:00 PM"
     },
-    date: "Apr 17, 2021",
-    time: "05:00 PM to 10:00 PM",
-    bannerId: 3
-  },
-  ];
-
-export function getNearbyEvents(location) {
-  return events.map((event) => {
-    event.distance = calculateDistance(
-      location.lat,
-      location.lon,
-      event.location.lat,
-      event.location.lon
-    );
-    event.banner = `/img/banner/${event.bannerId}.jpg`;
-    return event;
-  }).sort((a, b) => {
-      return a.distance - b.distance;
-  });
-}
-
-export function getEvent(id){
-    const event = events.find(event => event.id === id);
-    event.banner = `/img/banner/${event.bannerId}.jpg`;
-    return event;
-}
-
-export function randomNumber(min, max) {
-  return Math.floor(Math.random() * max) + min;
-}
-
-export function calculateDistance(lat1, lon1, lat2, lon2) {
-  if (lat1 == lat2 && lon1 == lon2) {
-    return 0;
-  } else {
-    var radlat1 = (Math.PI * lat1) / 180;
-    var radlat2 = (Math.PI * lat2) / 180;
-    var theta = lon1 - lon2;
-    var radtheta = (Math.PI * theta) / 180;
-    var dist =
-      Math.sin(radlat1) * Math.sin(radlat2) +
-      Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-    if (dist > 1) {
-      dist = 1;
+    {
+        name: "Tallest Man on Earth",
+        country: "US",
+        time: "06:00 PM to 09:00 PM"
+    },
+    {
+        name: "Carolina Country Music Festival",
+        country: "US",
+        time: "08:00 AM to 11:00 AM"
+    },
+    {
+        name: "Boots in the Park",
+        country: "US",
+        time: "03:00 PM to 07:00 PM"
+    },
+    {
+        name: "Usha Uthup's Original",
+        country: "IN",
+        time: "01:00 PM to 08:00 PM"
+    },
+    {
+        name: "Melody Us",
+        country: "IN",
+        time: "04:00 PM to 08:00 PM"
+    },
+    {
+        name: "Indian Music Experience",
+        country: "IN",
+        time: "10:00 AM to 05:00 PM"
+    },
+    {
+        name: "Akil Sachdeva Live",
+        country: "IN",
+        time: "05:00 PM to 07:00 PM"
+    },
+    {
+        name: "Darshan Raval Night",
+        country: "IN",
+        time: "07:00 PM to 10:00 PM"
+    },
+    {
+        name: "Ibadat e Mausiqi",
+        country: "IN",
+        time: "06:00 PM to 09:00 PM"
     }
-    dist = Math.acos(dist);
-    dist = (dist * 180) / Math.PI;
-    dist = dist * 60 * 1.1515;
-    return dist * 1.609344;
-  }
+]
+
+function randomDate(){
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const eventDate = new Date();
+    eventDate.setDate(eventDate.getDate() + randomNumber(2, 15));
+    return `${months[eventDate.getMonth()]} ${eventDate.getDate()}, ${eventDate.getFullYear()}`;
+}
+
+function randomLoc(lat, lon){
+    return {
+        lat: lat + (randomNumber(10000, 100000) / 1000000),
+        lon: lon + (randomNumber(10000, 100000) / 1000000)
+    }
+}
+
+async function generateEvents({
+    country,
+    region,
+    regionCode,
+    city,
+    lat,
+    lon
+}){
+    const key = `${country}:${regionCode || region}:${city}`;
+    const events = JSON.parse(await CONCERTS_LIST.get(key));
+    if(events){
+        return events;
+    }
+    const seed = EVENTS_SEED.filter(event => {
+        return ["US", "IN"].includes(country) ? event.country === country : event.country === "US";
+    }).map(event => Object.assign({}, event));
+    const newEvents = seed.map(event => {
+        event.id = randomNumber(1000, 9999).toString();
+        event.location = {
+            address: `${city}, ${region || regionCode}`,
+            ...randomLoc(lat, lon)
+        };
+        event.date = randomDate();
+        event.bannerId = randomNumber(1, 6);
+        event.price = random([500, 350, 1250, 100, 1000, 750]);
+        return event;
+    });
+    await CONCERTS_LIST.put(key, JSON.stringify(newEvents));
+    return newEvents;
+}
+
+export async function getNearby({
+    country,
+    region,
+    regionCode,
+    city,
+    lat,
+    lon
+}){
+    return await generateEvents({
+        country,
+        region,
+        regionCode,
+        city,
+        lat,
+        lon
+    });
+}
+
+export async function getEvent({
+    country,
+    region,
+    regionCode,
+    city,
+    eventId
+}){
+    const key = `${country}:${regionCode || region}:${city}`;
+    const events = JSON.parse(await CONCERTS_LIST.get(key));
+    return events.find(event => event.id === eventId);
 }

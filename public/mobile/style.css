@@ -10,12 +10,17 @@ html, body {
 }
 
 nav{
-    height: 60px;
+    height: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 24px;
     font-weight: 600;
+    background-color: #1C1D20;
+    color: white;
+    position: sticky;
+    top: 0;
+    border-bottom-left-radius: 60px;
 }
 
 section.main{
@@ -23,7 +28,7 @@ section.main{
 }
 
 h2{
-    font-size: 20px;
+    font-size: 18px;
 }
 
 .event-list{
@@ -34,15 +39,15 @@ h2{
 .event-list .event{
     display: flex;
     /* box-shadow: rgb(0 0 0 / 20%) 0px 3px 1px -2px, rgb(0 0 0 / 14%) 0px 2px 2px 0px, rgb(0 0 0 / 12%) 0px 1px 5px 0px; */
-    margin-bottom: 16px;
+    margin-bottom: 36px;
 }
 
 .event-list .event .banner{
     display: flex;
-    min-height: 120px;
+    min-height: 100px;
     background-size: cover;
     background-position: center;
-    flex: 0 0 120px;
+    flex: 0 0 100px;
     border-radius: 8px;
     overflow: hidden;
 }

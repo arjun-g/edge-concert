@@ -1,6 +1,7 @@
 import { getAssetFromKV, mapRequestToAsset } from '@cloudflare/kv-asset-handler';
 
-import { getEvent, getNearbyEvents, randomNumber } from "./ds";
+import { randomNumber, calculateDistance } from "./utils";
+import { getNearby, getEvent } from "./ds";
 
 /**
  * The DEBUG flag will do two things that help during development:
@@ -49,8 +50,8 @@ async function handleEvent(event) {
       region: cf.region,
       regionCode: cf.regionCode,
       city: cf.city,
-      lat: cf.latitude,
-      lon: cf.longitude
+      lat: Number(cf.latitude),
+      lon: Number(cf.longitude)
     }
   }
   else{
@@ -59,8 +60,8 @@ async function handleEvent(event) {
       region: "Tamil Nadu",
       regionCode: "TN",
       city: "Chennai",
-      lat: 0,
-      lon: 0
+      lat: 13.067439,
+      lon: 80.237617
     }
   }
 
@@ -88,7 +89,7 @@ async function handleEvent(event) {
     const parsedPath = parsePath(url.pathname);
 
     if(parsedPath.path === "events"){
-      const events = getNearbyEvents(location);
+      const events = await getNearbyEvents(location);
       class EventListHandler{
         element(element){
           element.setInnerContent(events.map(event => {
@@ -106,7 +107,8 @@ async function handleEvent(event) {
       return new HTMLRewriter().on("div.event-list", new EventListHandler()).transform(response);
     }
     else if(parsedPath.path === "event"){
-      const event = getEvent(parsedPath.id);
+      const event = await getEvent({eventId: parsedPath.id, ...location});
+      event.banner = `/img/banner/${event.bannerId}.jpg`;
       class EventDetailsHandler{
         element(element){
           console.log("ELE", element.getAttribute("class"));
@@ -128,6 +130,7 @@ async function handleEvent(event) {
               break;
             case "buy-button":
               element.setAttribute("onclick", `javascript:navigate('/event/${event.id}/ticket')`);
+              element.setInnerContent(`Buy Ticket $${event.price}`);
               break;
           }
         }
@@ -135,7 +138,8 @@ async function handleEvent(event) {
       return new HTMLRewriter().on(".banner img,.name,.date,.time,.buy button,.location", new EventDetailsHandler()).transform(response);
     }
     else if(parsedPath.path === "ticket"){
-      const event = getEvent(parsedPath.id);
+      const event = await getEvent({eventId: parsedPath.id, ...location});
+      event.banner = `/img/banner/${event.bannerId}.jpg`;
       class EventDetailsHandler{
         element(element){
           console.log("ELE", element.getAttribute("class"));
@@ -152,13 +156,16 @@ async function handleEvent(event) {
             case "time":
               element.setInnerContent(event.time);
               break;
+            case "location":
+              element.setInnerContent(event.location.address);
+              break;
             case "barcode":
               element.setInnerContent(`<span>${randomNumber(100000000, 999999999)}</span>`, { html: true });
               break;
           }
         }
       }
-      return new HTMLRewriter().on(".banner img,.name,.date,.time,.barcode", new EventDetailsHandler()).transform(response);
+      return new HTMLRewriter().on(".banner img,.name,.location,.date,.time,.barcode", new EventDetailsHandler()).transform(response);
     }
 
     return response
@@ -179,9 +186,23 @@ async function handleEvent(event) {
   }
 }
 
+export async function getNearbyEvents(location) {
+  const events = await getNearby(location);
+  return events.map((event) => {
+    event.distance = calculateDistance(
+      location.lat,
+      location.lon,
+      event.location.lat,
+      event.location.lon
+    );
+    event.banner = `/img/banner/${event.bannerId}.jpg`;
+    return event;
+  }).sort((a, b) => {
+      return a.distance - b.distance;
+  });
+}
 
 function getDeviceType(UA){
-  // return "mobile";
   return /\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test(UA) ||
   /\b(Android|Windows Phone|iPad|iPod)\b/i.test(UA) ? "mobile" : "web"
 }
