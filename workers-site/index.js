@@ -85,26 +85,50 @@ async function handleEvent(event) {
     response.headers.set('Feature-Policy', 'none')
     response.headers.set('X-UA', event.request.headers.get('user-agent'));
     response.headers.set('X-DT', deviceType);
+    response.headers.set("X-HOST", url.hostname);
 
     const parsedPath = parsePath(url.pathname);
+
+    const org = url.hostname.replace(".pesu.in", "");
 
     if(parsedPath.path === "events"){
       const events = await getNearbyEvents(location);
       class EventListHandler{
         element(element){
-          element.setInnerContent(events.map(event => {
-            return `<div class="event" onclick="javascript:navigate('/event/${event.id}')">
-              <div class="banner" style="background-image: url(${event.banner});"></div>
-              <div class="details">
-                  <h3>${event.name}</h3>
-                  <span>${Math.floor(event.distance)} km</span>
-                  <span>${event.date}</span>
-              </div>
-          </div>`;
-          }).join(""), { html: true });
+          if(element.tagName === "nav"){
+            if(org === "blue"){
+              if(deviceType === "web")
+                element.setAttribute("style", "background-image: url('/img/blue-banner.jpg'); color: #001737;");
+              element.setInnerContent("<span>Blue Pill Concerts</span>", { html: true });
+            }
+            else if(org === "red"){
+              if(deviceType === "web")
+                element.setAttribute("style", "background-image: url('/img/red-banner.jpg'); color: #46202B;");
+              element.setInnerContent("<span>Red Pill Concerts</span>", { html: true });
+            }
+            else{
+              if(deviceType === "web")
+                element.setAttribute("style", "background-image: url('/img/red-banner.jpg'); color: #46202B;");
+            }
+          }
+          else if(element.getAttribute("class") === "event-list"){
+            element.setInnerContent(events.map(event => {
+              return `<div class="event" onclick="javascript:navigate('/event/${event.id}')">
+                <div class="banner" style="background-image: url(${event.banner});"></div>
+                <div class="details">
+                    <h3>${event.name}</h3>
+                    <span>${Math.floor(event.distance)} km</span>
+                    <span>${event.date}</span>
+                </div>
+            </div>`;
+            }).join(""), { html: true });
+          }
+          else if(element.tagName === "title"){
+            element.setInnerContent(org === "red" ? "Red Pill Concerts" : org === "blue" ? "Blue Pill Concerts" : "Concert Booking")
+          }
         }
       }
-      return new HTMLRewriter().on("div.event-list", new EventListHandler()).transform(response);
+      return new HTMLRewriter().on("nav,div.event-list,title", new EventListHandler()).transform(response);
     }
     else if(parsedPath.path === "event"){
       const event = await getEvent({eventId: parsedPath.id, ...location});
@@ -133,9 +157,12 @@ async function handleEvent(event) {
               element.setInnerContent(`Buy Ticket $${event.price}`);
               break;
           }
+          if(element.tagName === "title"){
+            element.setInnerContent(org === "red" ? "Red Pill Concerts" : org === "blue" ? "Blue Pill Concerts" : "Concert Booking")
+          }
         }
       }
-      return new HTMLRewriter().on(".banner img,.name,.date,.time,.buy button,.location", new EventDetailsHandler()).transform(response);
+      return new HTMLRewriter().on("title,.banner img,.name,.date,.time,.buy button,.location", new EventDetailsHandler()).transform(response);
     }
     else if(parsedPath.path === "ticket"){
       const event = await getEvent({eventId: parsedPath.id, ...location});
@@ -163,9 +190,12 @@ async function handleEvent(event) {
               element.setInnerContent(`<span>${randomNumber(100000000, 999999999)}</span>`, { html: true });
               break;
           }
+          if(element.tagName === "title"){
+            element.setInnerContent(org === "red" ? "Red Pill Concerts" : org === "blue" ? "Blue Pill Concerts" : "Concert Booking")
+          }
         }
       }
-      return new HTMLRewriter().on(".banner img,.name,.location,.date,.time,.barcode", new EventDetailsHandler()).transform(response);
+      return new HTMLRewriter().on("title,.banner img,.name,.location,.date,.time,.barcode", new EventDetailsHandler()).transform(response);
     }
 
     return response
